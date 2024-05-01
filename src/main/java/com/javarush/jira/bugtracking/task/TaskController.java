@@ -156,4 +156,17 @@ public class TaskController {
             this(taskTo, new LinkedList<>());
         }
     }
+
+    @PostMapping(value = "/tag/{id}", consumes = MediaType.TEXT_PLAIN_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addTag(@PathVariable Long id,
+                         @RequestBody String tag) {
+        taskService.addTag(id, tag);
+    }
+
+    @DeleteMapping("/tag/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTag(@PathVariable long id, @RequestBody String tag) {
+        taskService.deleteTag(id, tag);
+    }
 }
