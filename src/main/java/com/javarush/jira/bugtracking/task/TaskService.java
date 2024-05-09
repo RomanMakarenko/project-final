@@ -170,8 +170,12 @@ public class TaskService {
             }
         }
         long millis = ChronoUnit.MILLIS.between(startTime, endTime);
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis),
-                TimeZone.getDefault().toZoneId());
+        if (startTime != null && endTime != null) {
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis),
+                    TimeZone.getDefault().toZoneId());
+        } else {
+            return null;
+        }
     }
 
     public LocalDateTime getTaskTimeInTest(Task task) {
@@ -187,7 +191,11 @@ public class TaskService {
             }
         }
         long millis = ChronoUnit.MILLIS.between(startTime, endTime);
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis),
-                TimeZone.getDefault().toZoneId());
+        if (startTime != null && endTime != null) {
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis),
+                    TimeZone.getDefault().toZoneId());
+        } else {
+            return null;
+        }
     }
 }
