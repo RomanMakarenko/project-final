@@ -329,3 +329,11 @@ values ('todo', 'ToDo', 3, 'in_progress,canceled|'),
 
 drop index UK_USER_BELONG;
 create unique index UK_USER_BELONG on USER_BELONG (OBJECT_ID, OBJECT_TYPE, USER_ID, USER_TYPE_CODE) where ENDPOINT is null;
+
+--changeset mroman:add_activity_records
+
+INSERT INTO ACTIVITY(AUTHOR_ID, TASK_ID, UPDATED, COMMENT, TITLE, DESCRIPTION, ESTIMATE, TYPE_CODE, STATUS_CODE,
+                     PRIORITY_CODE)
+values (5, 1, '2024-05-09 10:00:00', null, 'Data', null, 3, 'epic', 'in_progress', 'normal'),
+       (5, 1, '2024-05-09 14:22:10', null, 'Data', null, 1, 'epic', 'ready_for_review', 'normal'),
+       (5, 1, '2024-05-09 15:24:00', null, 'Data', null, 4, 'epic', 'done', 'normal');
