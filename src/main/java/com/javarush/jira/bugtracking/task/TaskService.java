@@ -15,12 +15,16 @@ import com.javarush.jira.common.util.Util;
 import com.javarush.jira.login.AuthUser;
 import com.javarush.jira.ref.RefType;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.TimeZone;
 
 import static com.javarush.jira.bugtracking.ObjectType.TASK;
 import static com.javarush.jira.bugtracking.task.TaskUtil.fillExtraFields;
@@ -142,7 +146,7 @@ public class TaskService {
     }
 
     public void addTag(Long id, String tag) {
-        Task task = handler.getRepository().getExisted(id);
+        Task task = handler.get(id);
         task.getTags().add(tag);
         handler.update(task, id);
     }
@@ -151,5 +155,39 @@ public class TaskService {
         Task task = handler.getRepository().getExisted(id);
         task.getTags().remove(tag);
         handler.update(task, id);
+    }
+
+    public LocalDateTime getTaskTimeInWork(Task task) {
+        LocalDateTime startTime = null;
+        LocalDateTime endTime = null;
+        List<Activity> taskActivities = task.getActivities();
+        for (Activity activity : taskActivities) {
+            String statusCode = activity.getStatusCode();
+            if (statusCode.equals("ready_for_review")) {
+                endTime = activity.getUpdated();
+            } else if (statusCode.equals("in_progress")) {
+                startTime = activity.getUpdated();
+            }
+        }
+        long millis = ChronoUnit.MILLIS.between(startTime, endTime);
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis),
+                TimeZone.getDefault().toZoneId());
+    }
+
+    public LocalDateTime getTaskTimeInTest(Task task) {
+        LocalDateTime startTime = null;
+        LocalDateTime endTime = null;
+        List<Activity> taskActivities = task.getActivities();
+        for (Activity activity : taskActivities) {
+            String statusCode = activity.getStatusCode();
+            if (statusCode.equals("done")) {
+                endTime = activity.getUpdated();
+            } else if (statusCode.equals("ready_for_review")) {
+                startTime = activity.getUpdated();
+            }
+        }
+        long millis = ChronoUnit.MILLIS.between(startTime, endTime);
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis),
+                TimeZone.getDefault().toZoneId());
     }
 }
